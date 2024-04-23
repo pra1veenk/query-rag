@@ -77,8 +77,8 @@ For example, in `.cdsrc.json` file. Refer the [documentation](https://help.sap.c
 ## Hybrid testing
 
 - Bind the following services to application:
-    - hana cloud
-    - destination service
+    - hana cloud (cds bind db --to query-rag-usecase-db)
+    - destination service (cds bind destinations --to query-rag-usecase-destination-service)
 
 - Build artifacts and deploy to HANA:
 
