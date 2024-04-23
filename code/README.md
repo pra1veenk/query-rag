@@ -1,8 +1,7 @@
-#  Leave Policy Compliance Verification Assistant
+#  Query RAG
 
-This sample CAP application uses the CAP LLM Plugin to simplify the process of accessing HANA Vector/Embedding features, connectivity to AI Core and automate the entire RAG retrieval flow. It demonstrates a RAG scenario where users can ask any questions regarding leave requests, other HR policy and the application leverages RAG architecture to combine HR Policy documents with the leave data residing in SAP SuccessFactors systems to provide appropriate response.
+This sample CAP application uses the CAP LLM Plugin to simplify the process of accessing HANA Vector/Embedding features, connectivity to AI Core and automate the entire RAG retrieval flow. It demonstrates a RAG scenario where users can upload documents and ask questions.
 
-![Solution Diagram](./docs/images/hr-policy-chatbot.png)
 
 ### Pre-requisites:
  
@@ -93,7 +92,7 @@ For example, in `.cdsrc.json` file. Refer the [documentation](https://help.sap.c
 - Build server and run application:
 
 `cds build`  
-`cds watch --profile dev`
+`cds watch --profile hybrid`
 
 - Login using the username and password found in `package.json` file.
 

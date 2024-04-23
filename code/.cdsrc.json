@@ -18,7 +18,7 @@
         "AICoreAzureOpenAIDestination": {
             "kind": "rest",
             "credentials": {
-              "destination": "openai-aicore-api",
+              "destination": "GENERATIVE_AI_HUB",
               "requestTimeout": "300000"
             }
         },
