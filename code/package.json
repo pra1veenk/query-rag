@@ -41,7 +41,7 @@
     },
     "cds": {
         "requires": {
-            "[dev]": {
+            "[hybrid]": {
                 "db": "hana-cloud",
                 "cap-llm-plugin": {
                     "impl": "cap-llm-plugin/srv/cap-llm-plugin.js"
@@ -58,8 +58,8 @@
                     "passport": {
                         "strategy": "mock",
                         "users": {
-                            "JohnDole@tester.sap.com": {
-                                "ID": "dummy.user@com",
+                            "p.padegal@sap.com": {
+                                "ID": "p.padegal@sap.com",
                                 "password": "initial"
                             }
                         }

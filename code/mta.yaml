@@ -12,9 +12,9 @@ build-parameters:
         - npx cds build --production
 
 modules:
-# --------------------- SERVER MODULE -------------------------
+  # --------------------- SERVER MODULE -------------------------
   - name: query-rag-usecase-srv
-# -------------------------------------------------------------
+    # -------------------------------------------------------------
     type: nodejs
     path: gen/srv
     requires:
@@ -37,9 +37,9 @@ modules:
         - node_modules/
         - default-env.json
 
-# -------------------- DB MODULE ------------------------------
+  # -------------------- DB MODULE ------------------------------
   - name: query-rag-usecase-db-deployer
-# -------------------------------------------------------------
+    # -------------------------------------------------------------
     type: hdb
     path: gen/db
     requires:
@@ -50,9 +50,9 @@ modules:
       ignore:
         - node_modules/
 
-# ------------------ DESTINATION CONTENT ----------------------
+  # ------------------ DESTINATION CONTENT ----------------------
   - name: query-rag-usecase-destination-content
-# ------------------------------------------------------------
+    # ------------------------------------------------------------
     type: com.sap.application.content
     requires:
       - name: query-rag-usecase-destination-service
@@ -73,19 +73,19 @@ modules:
             - Name: query_rag_usecase_repo_host
               ServiceInstanceName: query-rag-usecase-html5-app-host-service
               ServiceKeyName: query-rag-usecase-repo-host-key
-              sap.cloud.service: query.rag.app2
+              sap.cloud.service: query.ragapp
             - Authentication: OAuth2UserTokenExchange
               Name: query_uaa_query_rag_usecase
               ServiceInstanceName: query-rag-usecase-xsuaa-service
               ServiceKeyName: uaa_query-rag-usecase-key
-              sap.cloud.service: query.rag.app2
+              sap.cloud.service: query.ragapp
           existing_destinations_policy: ignore
     build-parameters:
       no-source: true
 
-# ------------------ APPLICATION CONTENT ----------------------
+  # ------------------ APPLICATION CONTENT ----------------------
   - name: query-rag-usecase-app-content
-# -------------------------------------------------------------
+    # -------------------------------------------------------------
     type: com.sap.application.content
     path: .
     requires:
@@ -100,9 +100,9 @@ modules:
           name: queryragui
           target-path: resources/
 
-# ------------- APPLICATION: UI5 -------------------------
+  # ------------- APPLICATION: UI5 -------------------------
   - name: queryragui
-# ------------------------------------------------------------
+    # ------------------------------------------------------------
     type: html5
     path: app/query-rag-ui
     build-parameters:
@@ -114,9 +114,9 @@ modules:
       supported-platforms:
         []
 
-# ------------------ App Router -------------------------------  
+  # ------------------ App Router -------------------------------  
   - name: query-rag-usecase-approuter
-# -------------------------------------------------------------
+    # -------------------------------------------------------------
     type: approuter.nodejs
     path: app/
     parameters:
@@ -125,9 +125,9 @@ modules:
       memory: 256M
     build-parameters:
       ignore:
-      - .env
-      - node_modules/
-      - default-env.json
+        - .env
+        - node_modules/
+        - default-env.json
     requires:
       - name: srv-api
         group: destinations
@@ -138,9 +138,9 @@ modules:
       - name: query-rag-usecase-auth
 
 resources:
-# ------------------------------------------------------------
+  # ------------------------------------------------------------
   - name: query-rag-usecase-auth
-# ------------------------------------------------------------
+    # ------------------------------------------------------------
     type: org.cloudfoundry.managed-service
     parameters:
       path: ./xs-security.json
@@ -150,24 +150,24 @@ resources:
       config:
         tenant-mode: dedicated
         xsappname: query-rag-usecase-${org}-${space}
-# ------------------------------------------------------------
+  # ------------------------------------------------------------
   - name: query-rag-usecase-db
-# ------------------------------------------------------------
+    # ------------------------------------------------------------
     type: com.sap.xs.hdi-container
     parameters:
       service: hana
       service-plan: hdi-shared
-# ------------------------------------------------------------
+  # ------------------------------------------------------------
   - name: query-rag-usecase-repo-host
-# ------------------------------------------------------------
+    # ------------------------------------------------------------
     type: org.cloudfoundry.managed-service
     parameters:
       service: html5-apps-repo
       service-name: query-rag-usecase-html5-app-host-service
       service-plan: app-host
-# ------------------------------------------------------------
+  # ------------------------------------------------------------
   - name: query-rag-usecase-destination-service
-# ------------------------------------------------------------
+    # ------------------------------------------------------------
     type: org.cloudfoundry.managed-service
     requires:
       - name: srv-api
