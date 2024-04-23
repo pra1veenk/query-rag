@@ -21,10 +21,6 @@
               "destination": "GENERATIVE_AI_HUB",
               "requestTimeout": "300000"
             }
-        },
-        "SUCCESS_FACTORS_CREDENTIALS": {
-            "AUTHORIZATION_HEADER": "<AUTHORIZATION_HEADER>",
-            "USER_ID": "<USER_ID>"
         }
     }
 

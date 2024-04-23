@@ -30,9 +30,7 @@ HTML5.DynamicDestination: true
 4. [Create SAP HANA Cloud](https://help.sap.com/docs/HANA_CLOUD_ALIBABA_CLOUD/683a53aec4fc408783bbb2dd8e47afeb/7d4071a49c204dfc9e542c5e47b53156.html) with Vector Engine (QRC 1/2024 or later).
 
  
-5. Configure the Generative AI Hub and SuccessFactors connection details.
-
-Refer [SuccessFactors authorization header details](https://help.sap.com/docs/SAP_SUCCESSFACTORS_PLATFORM/d599f15995d348a1b45ba5603e2aba9b/5c8bca0af1654b05a83193b2922dcee2.html).
+5. Configure the Generative AI Hub connection details.
  
 For example, in `.cdsrc.json` file. Refer the [documentation](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/create-deployment-for-generative-ai-model-in-sap-ai-core) for more details.
  
