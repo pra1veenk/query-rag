@@ -122,7 +122,7 @@ module.exports = function () {
         const entry = {
           "text_chunk": chunk.pageContent,
           "metadata_column": fileName,
-          "embedding": array2VectorBuffer(embedding)
+          "embedding": embedding
         };
         textChunkEntries.push(entry);
       }
