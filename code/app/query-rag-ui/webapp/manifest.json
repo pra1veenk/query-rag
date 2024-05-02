@@ -175,6 +175,6 @@
   },
   "sap.cloud": {
     "public": true,
-    "service": "query.rag.app2"
+    "service": "query.ragapp"
   }
 }
