@@ -21,6 +21,7 @@ entity Message {
     key mID: UUID not null;
     role: String;
     content: LargeString;
+    additionalContent: LargeString;
     creation_time: Timestamp;
 }
 
@@ -29,6 +30,9 @@ entity DocumentChunk
     text_chunk: LargeString;
     metadata_column: LargeString;
     embedding: Vector(1536);
+    fileID: String;
+    fileName: String;
+    pageNumber: Integer;
 }
 
 

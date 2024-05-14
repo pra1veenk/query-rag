@@ -157,11 +157,15 @@ sap.ui.define([
 
             const chatModel = this.getView().getModel('chatModel');
             const conversationId = chatModel.getProperty("/conversationId");
+            let content = oReturn.content
+            if(oReturn.additionalContent && oReturn.additionalContent.length > 0){
+                content += "<strong>Reference : </strong>"+oReturn.additionalContent
+            }
             const backendResponse = {
                 conversationId: conversationId,
                 messageId: self.crypto.randomUUID(),
                 message_time: new Date(oReturn.messageTime),
-                content: oReturn.content,
+                content: content,
                 user_id: "",
                 user_role: oReturn.role,
                 icon_path: "sap-icon://da-2",

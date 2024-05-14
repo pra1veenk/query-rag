@@ -90,6 +90,7 @@ async function handleMemoryAfterRagCall(conversationId, message_time, chatRagRes
             "mID": uuidv4(),
             "role": chatRagResponse.role,
             "content": chatRagResponse.content,
+            "additionalContent": chatRagResponse.additionalContent,
             "creation_time": message_time
         };
 

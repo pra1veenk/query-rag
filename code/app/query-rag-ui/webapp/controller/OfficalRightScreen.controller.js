@@ -59,7 +59,7 @@ sap.ui.define([
         },
 
         getBaseURL: function () {
-
+            
             var appId = this.getOwnerComponent().getManifestEntry("/sap.app/id");
             var appPath = appId.replaceAll(".", "/");
             var appModulePath = jQuery.sap.getModulePath(appPath);
@@ -106,12 +106,15 @@ sap.ui.define([
             const chatHistories = chatModel.getProperty(path);
 
             for (const returnObj of oReturn.value) {
-
+                let content = returnObj.content
+                if(returnObj.additionalContent && returnObj.additionalContent.length > 0){
+                    content += "<strong>Reference : </strong>"+returnObj.additionalContent
+                }
                 const backendResponse = {
                     conversationId: returnObj.cID_cID,
                     messageId: returnObj.mID,
                     message_time: new Date(returnObj.creation_time),
-                    content: returnObj.content,
+                    content: content,
                     user_id: "",
                     user_role: returnObj.role === "assistant" ? "assistant " : "You",
                     icon_path: returnObj.role === "assistant" ? "sap-icon://da-2" : "",
@@ -235,11 +238,15 @@ sap.ui.define([
 
             const chatModel = this.getView().getModel('chatModel');
             const conversationId = chatModel.getProperty("/conversationId");
+            let content = oReturn.content
+            if(oReturn.additionalContent && oReturn.additionalContent.length > 0){
+                content += "<strong>Reference : </strong>"+oReturn.additionalContent
+            }
             const backendResponse = {
                 conversationId: conversationId,
                 messageId: self.crypto.randomUUID(),
                 message_time: new Date(oReturn.messageTime),
-                content: oReturn.content,
+                content: content,
                 user_id: "",
                 user_role: oReturn.role,
                 icon_path: "sap-icon://da-2",

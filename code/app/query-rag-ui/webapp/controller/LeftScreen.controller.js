@@ -200,13 +200,16 @@ sap.ui.define([
             const aSelectedItems = oTable.getSelectedItems();
 			const oDownloadBtn = this.byId("downloadSelectedButton");
             const oDeleteBtn = this.byId("deleteSelectedButton");
+            const oDeleteEmbeddingBtn = this.byId("deleteEmbeddingSelectedButton");
 
             if (aSelectedItems.length > 0) {
 				oDownloadBtn.setEnabled(true);
                 oDeleteBtn.setEnabled(true);
+                oDeleteEmbeddingBtn.setEnabled(true);
 			} else {
 				oDownloadBtn.setEnabled(false);
                 oDeleteBtn.setEnabled(false);
+                oDeleteEmbeddingBtn.setEnabled(false);
 			}
         },
 
@@ -367,15 +370,23 @@ sap.ui.define([
             this.requestFileDelete(fileID)
                 .then((result) => {
 
+                    this.requestEmbeddingDelete(fileID)
+                    .then((result1) => {		
+                    })
+                    .catch((error1) => {
+                        console.log(error1.message);
+                    });
+
                     this.byId("fileManagementFragment").setBusy(false);
                     this.byId("uploadSetWithTable").getBinding("items").refresh();
                     this.byId("uploadSet").getBinding("items").refresh();
 
                     const oDownloadBtn = this.byId("downloadSelectedButton");
                     const oDeleteBtn = this.byId("deleteSelectedButton");
+                    const oDeleteEmbeddingBtn = this.byId("deleteEmbeddingSelectedButton");
                     oDownloadBtn.setEnabled(false);
                     oDeleteBtn.setEnabled(false);
-
+                    oDeleteEmbeddingBtn.setEnabled(false);
                     MessageToast.show(`File ${fileName} with ID ${fileID} successfully deleted`);			
                 })
                 .catch((error) => {
@@ -407,10 +418,15 @@ sap.ui.define([
         onDeleteEmbedding: function(oEvent){
 
             this.byId("fileManagementFragment").setBusy(true);
-            this.requestEmbeddingDelete()
+            const oUploadSetTable = this.byId("uploadSetWithTable");
+			const oItem = oUploadSetTable.getSelectedItem();
+            const oAggregations = oItem.mAggregations;
+            const fileID = oAggregations.cells[1].getProperty("text");
+            const fileName = oItem.getProperty("fileName");
+            this.requestEmbeddingDelete(fileID)
             .then((result) => {
                 this.byId("fileManagementFragment").setBusy(false);
-                MessageToast.show(`All embeddings successfully deleted.`);			
+                MessageToast.show(`All embeddings successfully deleted. for file : ${fileName}`);			
             })
             .catch((error) => {
 
@@ -420,11 +436,16 @@ sap.ui.define([
             });
         },
 
-        requestEmbeddingDelete: function(){
-
+        requestEmbeddingDelete: function(pdfFileID){
+            const payload = JSON.stringify({
+                uuid: pdfFileID.toString(),
+            });
             const settings = {
-                url: this.getBaseURL() + "/odata/v4/embedding-storage/deleteEmbeddings()",
-                method: "GET",
+                url: this.getBaseURL() + "/odata/v4/embedding-storage/deleteEmbeddings",
+                method: "POST",
+                contentType: 'application/json',
+                async: true,
+                data: payload,
             };
 
             return new Promise((resolve, reject) => {
@@ -469,7 +490,7 @@ sap.ui.define([
         },
 
         getBaseURL: function () {
-
+            
             var appId = this.getOwnerComponent().getManifestEntry("/sap.app/id");
             var appPath = appId.replaceAll(".", "/");
             var appModulePath = jQuery.sap.getModulePath(appPath);

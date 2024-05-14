@@ -66,7 +66,7 @@
                     <m:Button
                         id="deleteEmbeddingSelectedButton"
                         text="Delete Embeddings"
-                        enabled="true"
+                        enabled="false"
                         press=".onDeleteEmbedding"/>
                 </m:OverflowToolbar>
             </headerToolbar>

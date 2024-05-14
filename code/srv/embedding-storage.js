@@ -4,7 +4,7 @@ const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const fs = require('fs');
 const { PDFDocument } = require('pdf-lib');
 const { PDFLoader } = require('langchain/document_loaders/fs/pdf');
-
+const aiCoreUtil = require('./utils/ai-core');
 
 // Helper method to convert embeddings to buffer for insertion
 let array2VectorBuffer = (data) => {
@@ -49,7 +49,6 @@ module.exports = function () {
       const { uuid } = req.data;
       const db = await cds.connect.to('db');
       const { Files, DocumentChunk } = this.entities;
-      const vectorplugin = await cds.connect.to("cap-llm-plugin");
       let textChunkEntries = [];
 
       // Check if document exists
@@ -98,7 +97,7 @@ module.exports = function () {
       console.log('Temporary PDF File restored and saved to:', tempDocLocation);
 
       // Delete existing embeddings 
-      await DELETE.from(DocumentChunk);
+      await DELETE.from(DocumentChunk).where({ fileID: uuid });
 
       // Load the document to langchain text loader
       loader = new PDFLoader(tempDocLocation);
@@ -118,11 +117,14 @@ module.exports = function () {
       console.log("Generating the vector embeddings for the text chunks.");
       // For each text chunk generate the embeddings
       for (const chunk of textChunks) {
-        const embedding = await vectorplugin.getEmbedding(chunk.pageContent);
+        const embedding = await aiCoreUtil.getEmbedding(chunk.pageContent);
+
         const entry = {
           "text_chunk": chunk.pageContent,
-          "metadata_column": fileName,
-          "embedding": embedding
+          "embedding": array2VectorBuffer(embedding),
+          "fileID": uuid,
+          "pageNumber": chunk.metadata.loc.pageNumber,
+          "fileName": fileName[0].fileName
         };
         textChunkEntries.push(entry);
       }
@@ -135,7 +137,7 @@ module.exports = function () {
       }
 
       // Delete temp document
-      deleteIfExists(tempDocLocation);
+      //await deleteIfExists(tempDocLocation);
 
     }
     catch (error) {
@@ -148,11 +150,12 @@ module.exports = function () {
   })
 
 
-  this.on('deleteEmbeddings', async () => {
+  this.on('deleteEmbeddings', async (req) => {
     try {
+      const { uuid } = req.data;
       // Delete any previous records in the table
       const { DocumentChunk } = this.entities;
-      await DELETE.from(DocumentChunk);
+      await DELETE.from(DocumentChunk).where({fileID : uuid});
       return "Success!"
     }
     catch (error) {

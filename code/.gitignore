@@ -9,6 +9,7 @@ gen/
 node_modules/
 target/
 task-service.*
+dist/
 
 # Web IDE, App Studio
 .che/

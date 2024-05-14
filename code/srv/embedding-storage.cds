@@ -18,7 +18,7 @@ service EmbeddingStorageService @(requires: 'authenticated-user') {
     where: 'createdBy = $user'
   }])                  as projection on db.Files;
 
-  action   storeEmbeddings(uuid : String) returns String;
-  function deleteEmbeddings()             returns String;
+  action storeEmbeddings(uuid : String) returns String;
+  action deleteEmbeddings(uuid : String) returns String;
 
 }

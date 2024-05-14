@@ -8,17 +8,11 @@ service ChatService @(requires: 'authenticated-user') {
     }])                 as projection on db.Conversation;
     entity Message      as projection on db.Message;
 
-    type RagResponse_AdditionalContents {
-
-        score       : String;
-        pageContent : String;
-    }
-
     type RagResponse {
         role               : String;
         content            : String;
         messageTime        : String;
-        additionalContents : array of RagResponse_AdditionalContents;
+        additionalContent : String;
     }
 
     action   getChatRagResponse(conversationId : String, messageId : String, message_time : Timestamp, user_id : String, user_query : String) returns RagResponse;

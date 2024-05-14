@@ -5,6 +5,7 @@ const { handleMemoryBeforeRagCall, handleMemoryAfterRagCall } = require('./memor
 const tableName = 'SAP_TISCE_DEMO_DOCUMENTCHUNK'; 
 const embeddingColumn  = 'EMBEDDING'; 
 const contentColumn = 'TEXT_CHUNK';
+const aiCoreUtil = require('./utils/ai-core');
 
 const systemPrompt = 
 `Your task is to answer queries using the grounding data provided.\n
@@ -34,7 +35,6 @@ module.exports = function () {
             //request input data
             const { conversationId, messageId, message_time, user_id, user_query } = req.data;
             const { Conversation, Message } = this.entities;
-            const vectorplugin = await cds.connect.to("cap-llm-plugin");
             
             //handle memory before the RAG LLM call
             const memoryContext = await handleMemoryBeforeRagCall (conversationId , messageId, message_time, user_id , user_query, Conversation, Message );
@@ -50,25 +50,39 @@ module.exports = function () {
                 "generic-query" : genericRequestPrompt
             }
 
-            const chatRagResponse = await vectorplugin.getRagResponse(
+            const ragResponse = await aiCoreUtil.getRagResponse(
                 user_query,
                 tableName,
                 embeddingColumn,
                 contentColumn,
                 genericRequestPrompt ,
                 memoryContext .length > 0 ? memoryContext : undefined,
-                30
+                3
             );
+            
+            let additionalContent = "";
+            const metadata = ragResponse.metadata;
+            if(metadata && metadata.length){
+                metadata.forEach((item, index) => {
+                    additionalContent += ` ${index+1}. File name : ${item.fileName} , Page number : ${item.pageNumber} \n`
+                })
+            }
+            const chatRagResponse = {
+                "role":"assistant",
+                "content":ragResponse.completion.content,
+                "additionalContent": additionalContent
+            }
+
 
             //handle memory after the RAG LLM call
             const responseTimestamp = new Date().toISOString();
-            await handleMemoryAfterRagCall (conversationId , responseTimestamp, chatRagResponse.completion, Message, Conversation);
+            await handleMemoryAfterRagCall (conversationId , responseTimestamp, chatRagResponse, Message, Conversation);
 
             const response = {
-                "role" : chatRagResponse.completion.role,
-                "content" : chatRagResponse.completion.content,
+                "role" : chatRagResponse.role,
+                "content" : chatRagResponse.content,
                 "messageTime": responseTimestamp,
-                "additionalContents": chatRagResponse.additionalContents,
+                "additionalContent": chatRagResponse.additionalContent
             };
 
             return response;
