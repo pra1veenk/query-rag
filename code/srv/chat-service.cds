@@ -8,6 +8,13 @@ service ChatService @(requires: 'authenticated-user') {
     }])                 as projection on db.Conversation;
     entity Message      as projection on db.Message;
 
+    entity Files @(restrict: [{
+        grant: [
+            'READ'
+        ],
+        where: 'createdBy = $user'
+    }]) as projection on db.Files;
+
     type RagResponse {
         role               : String;
         content            : String;

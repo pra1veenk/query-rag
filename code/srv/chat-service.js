@@ -34,7 +34,8 @@ module.exports = function () {
         try {
             //request input data
             const { conversationId, messageId, message_time, user_id, user_query } = req.data;
-            const { Conversation, Message } = this.entities;
+            const { Conversation, Message, Files } = this.entities;
+            const loggedInUserID = cds.context.user.id;
             
             //handle memory before the RAG LLM call
             const memoryContext = await handleMemoryBeforeRagCall (conversationId , messageId, message_time, user_id , user_query, Conversation, Message );
@@ -49,6 +50,16 @@ module.exports = function () {
             const promptCategory  = {
                 "generic-query" : genericRequestPrompt
             }
+            //get filenames for logged in user
+            const fileList = await SELECT.from(Files).columns("fileName").where({ "CREATEDBY": loggedInUserID });
+            let fileNames = "(";
+            if (fileList.length > 0) {
+                fileList.forEach(file => {
+                    fileNames += `'${file.fileName}',`
+                });
+            }
+            fileNames = fileNames.slice(0,fileNames.length-1)
+            fileNames += ")"
 
             const ragResponse = await aiCoreUtil.getRagResponse(
                 user_query,
@@ -57,10 +68,11 @@ module.exports = function () {
                 contentColumn,
                 genericRequestPrompt ,
                 memoryContext .length > 0 ? memoryContext : undefined,
-                3
+                3,
+                fileNames
             );
             
-            let additionalContent = "";
+            let additionalContent = "\n";
             const metadata = ragResponse.metadata;
             if(metadata && metadata.length){
                 metadata.forEach((item, index) => {

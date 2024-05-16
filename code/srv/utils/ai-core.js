@@ -132,6 +132,7 @@ async function retryService(destService,query,data,headers,retryCount,attemptNum
     * @param {object} context - Optional.The chat history.
     * @param {string} algoName - Optional.The algorithm of similarity search. Currently only COSINE_SIMILARITY and L2DISTANCE are accepted. The default is 'COSINE_SIMILARITY'.
     * @param {number} topK - Optional.The number of the entries you want to return. Default value is 3.
+    * @param {string} fileNames - The names of files to restrict the search.
     * @param {object} chatParams - Optional.The other chat model params.
 
     * @returns {object} Returns the response from LLM.
@@ -144,12 +145,13 @@ async function retryService(destService,query,data,headers,retryCount,attemptNum
     chatInstruction,
     context,
     topK = 3,
+    fileNames,
     algoName = 'COSINE_SIMILARITY',
-    chatParams
+    chatParams,
   ) {
     try {
       const queryEmbedding = await this.getEmbedding(input);
-      const similaritySearchResults = await this.similaritySearch(tableName, embeddingColumnName, contentColumn, queryEmbedding, algoName, topK);
+      const similaritySearchResults = await this.similaritySearch(tableName, embeddingColumnName, contentColumn, queryEmbedding, algoName, topK, fileNames);
       const similarContent = similaritySearchResults.map(obj => obj.PAGE_CONTENT);
       const metadata = similaritySearchResults.map(obj => {
         return {
@@ -212,9 +214,10 @@ async function retryService(destService,query,data,headers,retryCount,attemptNum
     * @param {number[]} embedding - The input query embedding for similarity search.
     * @param {string} algoName - The algorithm of similarity search. Currently only COSINE_SIMILARITY and L2DISTANCE are accepted.
     * @param {number} topK - The number of entries you want to return.
+    * @param {string} fileNames - The names of files to restrict the search
     * @returns {object} The highest match entries from DB.
     */
-  async function similaritySearch(tableName, embeddingColumnName, contentColumn, embedding, algoName, topK) {
+  async function similaritySearch(tableName, embeddingColumnName, contentColumn, embedding, algoName, topK, fileNames) {
     try {
 
       // Ensure algoName is valid
@@ -226,7 +229,7 @@ async function retryService(destService,query,data,headers,retryCount,attemptNum
         FILEID,
         FILENAME,
         PAGENUMBER
-        FROM ${tableName}
+        FROM ${tableName} where FILENAME in ${fileNames}
         ORDER BY SCORE DESC) as results where SCORE > 0.75`;
       const result = await cds.db.run(selectStmt);
       if (result) return result;
